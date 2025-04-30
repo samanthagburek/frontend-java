@@ -24,6 +24,22 @@ public class FrontendService {
                 });
     }
 
+    public void updateDetectionRulePatch(int ruleId, String jsonPayload, FrontendCallback callback) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/api/rules/" + ruleId))
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(callback::onSuccess)
+                .exceptionally(ex -> {
+                    callback.onError(ex);
+                    return null;
+                });
+    }
+
     // Callback interface
     public interface FrontendCallback {
         void onSuccess(String response);
