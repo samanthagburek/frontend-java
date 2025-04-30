@@ -32,7 +32,6 @@ public class StockThingJavaFXApp extends Application {
         editRulesButton.setOnAction(e -> {
             EditRulesViewController view = new EditRulesViewController();
             root.setCenter(view.createView());
-
         });
 
         logsButton.setOnAction(e -> {
@@ -40,10 +39,10 @@ public class StockThingJavaFXApp extends Application {
             root.setCenter(logsView.createView());
         });
 
-//        alertsButton.setOnAction(e -> {
-//            AlertsViewController alertsView = new AlertsViewController();
-//            root.setCenter(alertsView.createView());
-//        });
+        alertsButton.setOnAction(e -> {
+            AlertsViewController alertsView = new AlertsViewController();
+            root.setCenter(alertsView.createView());
+        });
 
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle("StockThingJava Frontend");

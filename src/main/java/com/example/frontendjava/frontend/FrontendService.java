@@ -49,6 +49,15 @@ public class FrontendService {
         sendRequest(request, callback);
     }
 
+    public void fetchAlerts(FrontendCallback callback) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/api/alerts")) // Adjust endpoint as needed
+                .GET()
+                .build();
+
+        sendRequest(request, callback);
+    }
+
     // Callback interface
     public interface FrontendCallback {
         void onSuccess(String response);
