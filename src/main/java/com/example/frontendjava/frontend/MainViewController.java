@@ -43,7 +43,7 @@ public class MainViewController {
             }
         });
 
-        Button simulateButton = new Button("Simulate Attack");
+        Button simulateButton = new Button("Example Attack Simulation");
         simulateButton.setOnAction(e -> {
             statusLabel.setText("Simulation trigger requested.");
             simulateAttack();
