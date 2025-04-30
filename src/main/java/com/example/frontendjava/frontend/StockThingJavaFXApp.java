@@ -18,20 +18,26 @@ public class StockThingJavaFXApp extends Application {
         // Navigation
         VBox sidebar = new VBox(10);
         Button editRulesButton = new Button("Edit Detection Rules");
+        Button addRulesButton = new Button("Add Detection Rules");
         Button logsButton = new Button("Logs");
         Button alertsButton = new Button("Alerts");
 
-        sidebar.getChildren().addAll(editRulesButton, logsButton, alertsButton);
+        sidebar.getChildren().addAll(editRulesButton, addRulesButton, logsButton, alertsButton);
         root.setLeft(sidebar);
 
         // Default page
-//        MainViewController mainView = new MainViewController();
-//        root.setCenter(mainView.createMainView());
+        MainViewController mainView = new MainViewController();
+        root.setCenter(mainView.createMainView(primaryStage));
 
         // Button actions
         editRulesButton.setOnAction(e -> {
             EditRulesViewController view = new EditRulesViewController();
             root.setCenter(view.createView());
+        });
+
+        addRulesButton.setOnAction(e -> {
+            PostRuleController view = new PostRuleController();
+            root.setCenter(view.getPostRuleView());
         });
 
         logsButton.setOnAction(e -> {
