@@ -8,22 +8,21 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 
-public class MainViewController {
+public class EditRulesViewController {
 
     private final FrontendService service = new FrontendService();
-    private VBox rulesContainer;
+    private final VBox rulesContainer = new VBox(10);
 
-    public VBox createMainView() {
-        Button fetchButton = new Button("Fetch Detection Rules");
-        rulesContainer = new VBox(10);
+    public VBox createView() {
         ScrollPane scrollPane = new ScrollPane(rulesContainer);
         scrollPane.setFitToWidth(true);
 
-        fetchButton.setOnAction(event -> fetchRules());
-
-        VBox layout = new VBox(10, fetchButton, scrollPane);
+        VBox layout = new VBox(10, scrollPane);
         layout.setPadding(new Insets(10));
         layout.setPrefSize(600, 400);
+
+        fetchRules();  // Automatically load rules when view is created
+
         return layout;
     }
 
@@ -43,10 +42,8 @@ public class MainViewController {
 
                             TextField nameField = new TextField(rule.get("name").asText());
                             TextField descField = new TextField(rule.get("description").asText());
-
                             CheckBox enabledBox = new CheckBox("Enabled");
                             enabledBox.setSelected(rule.get("enabled").asBoolean());
-
                             Spinner<Integer> thresholdSpinner = new Spinner<>(1, 1000, rule.get("threshold").asInt());
 
                             ruleCard.getChildren().addAll(
@@ -56,17 +53,14 @@ public class MainViewController {
                                     new Label("Threshold:"), thresholdSpinner
                             );
 
-                            int ruleId = rule.get("id").asInt(); // Capture ID
+                            int ruleId = rule.get("id").asInt();
 
                             Button saveButton = new Button("Save");
                             saveButton.setOnAction(e -> {
                                 try {
                                     ObjectMapper localMapper = new ObjectMapper();
-
-                                    // Prepare the patch data based on the modified fields
                                     ObjectNode patchData = localMapper.createObjectNode();
 
-                                    // Only add modified fields to the patch
                                     if (!nameField.getText().equals(rule.get("name").asText())) {
                                         patchData.put("name", nameField.getText());
                                     }
@@ -104,9 +98,8 @@ public class MainViewController {
                                 }
                             });
 
-                            ruleCard.getChildren().add(saveButton); // Add Save button
-
-                            rulesContainer.getChildren().add(ruleCard); // Add card to UI
+                            ruleCard.getChildren().add(saveButton);
+                            rulesContainer.getChildren().add(ruleCard);
                         }
 
                     } catch (Exception e) {
@@ -124,5 +117,6 @@ public class MainViewController {
         });
     }
 }
+
 
 

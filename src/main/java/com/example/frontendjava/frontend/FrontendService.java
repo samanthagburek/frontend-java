@@ -40,9 +40,28 @@ public class FrontendService {
                 });
     }
 
+    public void fetchLogEntries(FrontendCallback callback) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/api/logs")) // Update with your actual endpoint
+                .GET()
+                .build();
+
+        sendRequest(request, callback);
+    }
+
     // Callback interface
     public interface FrontendCallback {
         void onSuccess(String response);
         void onError(Throwable throwable);
+    }
+
+    private void sendRequest(HttpRequest request, FrontendCallback callback) {
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(callback::onSuccess)
+                .exceptionally(ex -> {
+                    callback.onError(ex);
+                    return null;
+                });
     }
 }
