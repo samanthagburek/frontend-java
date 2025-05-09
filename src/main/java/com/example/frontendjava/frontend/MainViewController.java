@@ -19,12 +19,22 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+
 public class MainViewController {
 
     private final VBox mainLayout = new VBox(20);
     private final Label statusLabel = new Label();
 
+    public void clearLayout() {
+        mainLayout.getChildren().clear(); // Clear all children from the VBox
+    }
+
     public VBox createMainView(Stage stage) {
+        clearLayout(); // Reset the layout
         mainLayout.setPadding(new Insets(40));
         mainLayout.setAlignment(Pos.CENTER);
 
@@ -55,24 +65,56 @@ public class MainViewController {
 
     private void uploadPcapFile(Path filePath) {
         try {
+            String boundary = "----WebKitFormBoundary" + System.currentTimeMillis();  // Random boundary string
+            String CRLF = "\r\n";
+
+            // Read file content
+            byte[] fileBytes = Files.readAllBytes(filePath);
+            String fileName = filePath.getFileName().toString();
+
+            // Build multipart body manually
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            DataOutputStream writer = new DataOutputStream(outputStream);
+
+            // --- Start multipart/form-data ---
+            writer.writeBytes("--" + boundary + CRLF);
+            writer.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"" + CRLF);
+            writer.writeBytes("Content-Type: application/octet-stream" + CRLF);
+            writer.writeBytes(CRLF);
+            writer.write(fileBytes);
+            writer.writeBytes(CRLF);
+            writer.writeBytes("--" + boundary + "--" + CRLF);  // End boundary
+            writer.flush();
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI("http://localhost:8080/api/pcap/upload"))
-                    .header("Content-Type", "application/octet-stream")
-                    .POST(HttpRequest.BodyPublishers.ofFile(filePath))
+                    .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()))
                     .build();
 
             HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenApply(HttpResponse::body)
-                    .thenAccept(response -> statusLabel.setText("Success: " + response))
+                    .thenAccept(response -> Platform.runLater(() -> {
+                        statusLabel.setText("Success: " + response);
+                        System.out.println("File upload successful: " + response);
+                    }))
                     .exceptionally(ex -> {
-                        statusLabel.setText("Upload failed: " + ex.getMessage());
+                        Platform.runLater(() -> {
+                            statusLabel.setText("Upload failed: " + ex.getMessage());
+                            System.out.println("Upload failed: " + ex.getMessage());
+                        });
                         return null;
                     });
+
         } catch (Exception ex) {
             ex.printStackTrace();
-            statusLabel.setText("Exception: " + ex.getMessage());
+            Platform.runLater(() -> {
+                statusLabel.setText("Exception: " + ex.getMessage());
+                System.out.println("Exception during upload: " + ex.getMessage());
+            });
         }
     }
+
 
     private void simulateAttack() {
         HttpClient client = HttpClient.newHttpClient();

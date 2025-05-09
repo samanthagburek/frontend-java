@@ -1,5 +1,5 @@
-com/example/frontendjava/frontend/FrontendService.class
 com/example/frontendjava/frontend/AlertsViewController.class
+com/example/frontendjava/frontend/FrontendService.class
 com/example/frontendjava/frontend/FrontendService$FrontendCallback.class
 com/example/frontendjava/frontend/LogsViewController$1.class
 com/example/frontendjava/frontend/LogsViewController.class
@@ -9,6 +9,6 @@ com/example/frontendjava/frontend/StockThingJavaFXApp.class
 com/example/frontendjava/frontend/EditRulesViewController$1.class
 com/example/frontendjava/frontend/PostRuleController$1.class
 com/example/frontendjava/FrontendJavaApplication.class
-com/example/frontendjava/frontend/MainViewController.class
 com/example/frontendjava/frontend/EditRulesViewController.class
+com/example/frontendjava/frontend/MainViewController.class
 com/example/frontendjava/frontend/PostRuleController.class
